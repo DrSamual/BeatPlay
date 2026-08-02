@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="হোম" />
+    <item
+        android:id="@+id/nav_live"
+        android:icon="@drawable/ic_tv"
+        android:title="লাইভ টিভি" />
+    <item
+        android:id="@+id/nav_movies"
+        android:icon="@drawable/ic_movie"
+        android:title="মুভি" />
+</menu>

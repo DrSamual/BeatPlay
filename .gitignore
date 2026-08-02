@@ -174,3 +174,10 @@
 *.lz
 *.lzma
 *.iso
+
+# Android
+**/local.properties
+**/google-services.json
+**/build/
+**/.externalNativeBuild/
+**/.cxx/
