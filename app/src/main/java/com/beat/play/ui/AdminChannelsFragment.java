@@ -1,6 +1,7 @@
 package com.beat.play.ui;
 
 import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,12 +12,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.beat.play.PlayerActivity;
 import com.beat.play.R;
 import com.beat.play.adapter.AdminChannelAdapter;
 import com.beat.play.data.DataStore;
@@ -46,6 +50,14 @@ public class AdminChannelsFragment extends Fragment {
     private ValueEventListener listener;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    private final ActivityResultLauncher<String[]> playlistFileLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri == null) {
+                    return;
+                }
+                importPlaylistFromUri(uri);
+            });
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -72,6 +84,11 @@ public class AdminChannelsFragment extends Fragment {
             @Override
             public void onDelete(Channel channel) {
                 confirmDelete(channel);
+            }
+
+            @Override
+            public void onPlay(Channel channel) {
+                PlayerActivity.start(requireContext(), channel.name, channel.url);
             }
         });
         recyclerView.setAdapter(adapter);
@@ -221,22 +238,104 @@ public class AdminChannelsFragment extends Fragment {
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_playlist, null);
         EditText etUrl = dialogView.findViewById(R.id.etUrl);
         EditText etRaw = dialogView.findViewById(R.id.etRaw);
+        View btnPickFile = dialogView.findViewById(R.id.btnPickFile);
+
+        btnPickFile.setOnClickListener(v -> {
+            playlistFileLauncher.launch(new String[]{
+                    "audio/x-mpegurl",
+                    "application/vnd.apple.mpegurl",
+                    "application/x-mpegURL",
+                    "text/plain",
+                    "application/octet-stream"});
+        });
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("প্লে লিস্ট ইমপোর্ট")
-                .setMessage("M3U URL দিন বা টেক্সট পেস্ট করুন")
+                .setMessage("M3U URL দিন, ফাইল থেকে নির্বাচন করুন বা টেক্সট পেস্ট করুন")
                 .setView(dialogView)
                 .setPositiveButton("ইমপোর্ট", (d, w) -> {
                     String url = etUrl.getText().toString().trim();
                     String raw = etRaw.getText().toString().trim();
                     if (url.isEmpty() && raw.isEmpty()) {
-                        Toast.makeText(requireContext(), "URL বা টেক্সট দিন", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "URL, ফাইল বা টেক্সট দিন", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     importPlaylist(url, raw);
                 })
                 .setNegativeButton("বাতিল", null)
                 .show();
+    }
+
+    private void importPlaylistFromUri(Uri uri) {
+        AlertDialog progress = new AlertDialog.Builder(requireContext())
+                .setTitle("ইমপোর্ট হচ্ছে...")
+                .setView(new ProgressBar(requireContext()))
+                .setCancelable(false)
+                .create();
+        progress.show();
+
+        executor.execute(() -> {
+            String content;
+            try {
+                content = readUriContent(uri);
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() -> {
+                    progress.dismiss();
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "ফাইল পড়া যায়নি", Toast.LENGTH_LONG).show();
+                    }
+                });
+                return;
+            }
+            List<Channel> channels = PlaylistParser.parse(content);
+            requireActivity().runOnUiThread(() -> {
+                progress.dismiss();
+                if (!isAdded()) {
+                    return;
+                }
+                for (Channel channel : channels) {
+                    Map<String, Object> values = new HashMap<>();
+                    values.put("name", channel.name);
+                    values.put("url", channel.url);
+                    values.put("logo", channel.logo);
+                    values.put("category", channel.category);
+                    reference.push().setValue(values);
+                }
+                Toast.makeText(requireContext(), channels.size() + "টি চ্যানেল ইমপোর্ট হয়েছে",
+                        Toast.LENGTH_LONG).show();
+            });
+        });
+    }
+
+    private String readUriContent(Uri uri) throws Exception {
+        java.io.InputStream inputStream = null;
+        java.io.BufferedReader reader = null;
+        try {
+            inputStream = requireContext().getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                throw new Exception("Cannot open stream");
+            }
+            reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+            return sb.toString();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (Exception ignored) {
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
     }
 
     private void importPlaylist(String url, String raw) {

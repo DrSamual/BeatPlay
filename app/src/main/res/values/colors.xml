@@ -2,8 +2,18 @@
 <resources>
     <color name="colorPrimary">#1A1A2E</color>
     <color name="colorPrimaryDark">#0F0F1E</color>
+    <color name="colorPrimaryLight">#252548</color>
     <color name="colorAccent">#E94560</color>
+    <color name="colorAccentLight">#FF7A8A</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="textPrimary">#F5F5FA</color>
     <color name="textSecondary">#9A9AAE</color>
+    <color name="textMuted">#6B6B82</color>
     <color name="cardBg">#222244</color>
+    <color name="cardBgLight">#2C2C56</color>
+    <color name="scrim">#99000000</color>
+    <color name="gradientStart">#1A1A2E</color>
+    <color name="gradientEnd">#2C1A3E</color>
+    <color name="gold">#FFC94D</color>
 </resources>

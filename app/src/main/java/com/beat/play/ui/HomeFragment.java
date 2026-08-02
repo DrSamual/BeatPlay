@@ -1,6 +1,5 @@
 package com.beat.play.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.beat.play.AnnouncementsActivity;
+import com.beat.play.MainActivity;
 import com.beat.play.PlayerActivity;
 import com.beat.play.R;
 import com.beat.play.adapter.BannerAdapter;
@@ -46,6 +45,8 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvMovies;
     private LinearLayout announcementContainer;
     private TextView tvAnnouncementsMore;
+    private TextView tvChannelsMore;
+    private TextView tvMoviesMore;
 
     private HomeChannelAdapter channelAdapter;
     private HomeMovieAdapter movieAdapter;
@@ -80,6 +81,8 @@ public class HomeFragment extends Fragment {
         rvMovies = view.findViewById(R.id.rvMovies);
         announcementContainer = view.findViewById(R.id.announcementContainer);
         tvAnnouncementsMore = view.findViewById(R.id.tvAnnouncementsMore);
+        tvChannelsMore = view.findViewById(R.id.tvChannelsMore);
+        tvMoviesMore = view.findViewById(R.id.tvMoviesMore);
 
         bannerAdapter = new BannerAdapter();
         bannerAdapter.setOnItemClickListener(banner -> {
@@ -122,8 +125,15 @@ public class HomeFragment extends Fragment {
         rvMovies.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false));
         rvMovies.setAdapter(movieAdapter);
 
-        tvAnnouncementsMore.setOnClickListener(v ->
-                startActivity(AnnouncementsActivity.intent(requireContext())));
+        tvAnnouncementsMore.setOnClickListener(v -> openTab(3));
+        tvChannelsMore.setOnClickListener(v -> openTab(1));
+        tvMoviesMore.setOnClickListener(v -> openTab(2));
+    }
+
+    private void openTab(int position) {
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).openTab(position);
+        }
     }
 
     @Override
@@ -211,6 +221,7 @@ public class HomeFragment extends Fragment {
                     channels = channels.subList(0, 10);
                 }
                 channelAdapter.setData(channels);
+                tvChannelsMore.setVisibility(channels.isEmpty() ? View.GONE : View.VISIBLE);
             }
 
             @Override
@@ -235,6 +246,7 @@ public class HomeFragment extends Fragment {
                     movies = movies.subList(0, 10);
                 }
                 movieAdapter.setData(movies);
+                tvMoviesMore.setVisibility(movies.isEmpty() ? View.GONE : View.VISIBLE);
             }
 
             @Override

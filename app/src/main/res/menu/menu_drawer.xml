@@ -7,7 +7,7 @@
     <item
         android:id="@+id/nav_live"
         android:icon="@drawable/ic_tv"
-        android:title="লাইভ" />
+        android:title="লাইভ টিভি" />
     <item
         android:id="@+id/nav_movies"
         android:icon="@drawable/ic_movie"
@@ -20,4 +20,21 @@
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
         android:title="সেটিংস" />
+
+    <item
+        android:id="@+id/divider_main"
+        android:title="" />
+
+    <item
+        android:id="@+id/nav_admin"
+        android:icon="@drawable/ic_gear"
+        android:title="অ্যাডমিন প্যানেল" />
+    <item
+        android:id="@+id/nav_share"
+        android:icon="@drawable/ic_share"
+        android:title="অ্যাপ শেয়ার করুন" />
+    <item
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_info"
+        android:title="অ্যাপ সম্পর্কে" />
 </menu>
