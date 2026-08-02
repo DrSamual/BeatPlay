@@ -21,6 +21,8 @@ public class AdminChannelAdapter extends RecyclerView.Adapter<AdminChannelAdapte
         void onEdit(Channel channel);
 
         void onDelete(Channel channel);
+
+        void onPlay(Channel channel);
     }
 
     private final List<Channel> data = new ArrayList<>();
@@ -63,6 +65,11 @@ public class AdminChannelAdapter extends RecyclerView.Adapter<AdminChannelAdapte
                 listener.onDelete(channel);
             }
         });
+        holder.imgPlay.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onPlay(channel);
+            }
+        });
     }
 
     @Override
@@ -72,7 +79,7 @@ public class AdminChannelAdapter extends RecyclerView.Adapter<AdminChannelAdapte
 
     static class VH extends RecyclerView.ViewHolder {
         TextView tvName, tvCategory;
-        ImageButton imgEdit, imgDelete;
+        ImageButton imgEdit, imgDelete, imgPlay;
 
         VH(@NonNull View itemView) {
             super(itemView);
@@ -80,6 +87,7 @@ public class AdminChannelAdapter extends RecyclerView.Adapter<AdminChannelAdapte
             tvCategory = itemView.findViewById(R.id.tvCategory);
             imgEdit = itemView.findViewById(R.id.imgEdit);
             imgDelete = itemView.findViewById(R.id.imgDelete);
+            imgPlay = itemView.findViewById(R.id.imgPlay);
         }
     }
 }

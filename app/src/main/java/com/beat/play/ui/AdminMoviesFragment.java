@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.beat.play.PlayerActivity;
 import com.beat.play.R;
 import com.beat.play.adapter.AdminMovieAdapter;
 import com.beat.play.data.DataStore;
@@ -67,6 +68,11 @@ public class AdminMoviesFragment extends Fragment {
             @Override
             public void onDelete(Movie movie) {
                 confirmDelete(movie);
+            }
+
+            @Override
+            public void onPlay(Movie movie) {
+                PlayerActivity.start(requireContext(), movie.title, movie.url);
             }
         });
         recyclerView.setAdapter(adapter);

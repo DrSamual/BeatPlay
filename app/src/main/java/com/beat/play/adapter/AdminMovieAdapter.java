@@ -21,6 +21,8 @@ public class AdminMovieAdapter extends RecyclerView.Adapter<AdminMovieAdapter.VH
         void onEdit(Movie movie);
 
         void onDelete(Movie movie);
+
+        void onPlay(Movie movie);
     }
 
     private final List<Movie> data = new ArrayList<>();
@@ -63,6 +65,11 @@ public class AdminMovieAdapter extends RecyclerView.Adapter<AdminMovieAdapter.VH
                 listener.onDelete(movie);
             }
         });
+        holder.imgPlay.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onPlay(movie);
+            }
+        });
     }
 
     @Override
@@ -72,7 +79,7 @@ public class AdminMovieAdapter extends RecyclerView.Adapter<AdminMovieAdapter.VH
 
     static class VH extends RecyclerView.ViewHolder {
         TextView tvTitle, tvYear;
-        ImageButton imgEdit, imgDelete;
+        ImageButton imgEdit, imgDelete, imgPlay;
 
         VH(@NonNull View itemView) {
             super(itemView);
@@ -80,6 +87,7 @@ public class AdminMovieAdapter extends RecyclerView.Adapter<AdminMovieAdapter.VH
             tvYear = itemView.findViewById(R.id.tvYear);
             imgEdit = itemView.findViewById(R.id.imgEdit);
             imgDelete = itemView.findViewById(R.id.imgDelete);
+            imgPlay = itemView.findViewById(R.id.imgPlay);
         }
     }
 }
